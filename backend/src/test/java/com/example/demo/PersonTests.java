@@ -1,7 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.entity.Person;
-import com.example.demo.repository.PersonRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,16 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
+
 
 @DataJpaTest
 public class PersonTests {
 
     private Validator validator;
 
+//    ตัวอย่างการ Autowired
     @Autowired
     private PersonRepository personRepository;
 
@@ -35,80 +38,126 @@ public class PersonTests {
 
     // ตั้งชื่อ test ให้สอดคล้องกับสิ่งที่ต้อง test
     @Test
-    void testPersonIdOKWith13Digits() {
+    void testPersonSaveSucess() {
         Person person = new Person();
-        person.setPersonId("1234567890123");
+        String personId = "1234567890123";
+        String fristName = "piampoon";
+        String lastName = "poonpiam";
+        String email = "sonicrat12@gmail.com";
+        Double hight = 170.6;
+        Double wight = 50.6;
+        person.setPersonId(personId);
+        person.setFristName(fristName);
+        person.setLastName(lastName);
+        person.setEmail(email);
+        person.setHight(hight);
+        person.setWight(wight);
 
         person = personRepository.saveAndFlush(person);
-
         Optional<Person> found = personRepository.findById(person.getId());
-        assertEquals("1234567890123", found.get().getPersonId());
+
+        assertEquals(personId,found.get().getPersonId());
+        assertEquals(fristName,found.get().getFristName());
+        assertEquals(lastName,found.get().getLastName());
+        assertEquals(email,found.get().getEmail());
+        assertEquals(hight,found.get().getHight());
+        assertEquals(wight,found.get().getWight());
     }
 
     @Test
     void testPersonIdMustNotBeNull() {
         Person person = new Person();
-        person.setPersonId(null);
+        String personId = null;
+        String fristName = "piampoon";
+        String lastName = "poonpiam";
+        String email = "sonicrat12@gmail.com";
+        Double hight = 170.6;
+        Double wight = 50.6;
+        person.setPersonId(personId);
+        person.setFristName(fristName);
+        person.setLastName(lastName);
+        person.setEmail(email);
+        person.setHight(hight);
+        person.setWight(wight);
 
         Set<ConstraintViolation<Person>> result = validator.validate(person);
-
-        // result ต้องมี error 1 ค่าเท่านั้น
+        //result ต้องมี error 1 ค่าเท่านั้น
         assertEquals(1, result.size());
 
         // error message ตรงชนิด และถูก field
         ConstraintViolation<Person> v = result.iterator().next();
         assertEquals("must not be null", v.getMessage());
-        assertEquals("personId", v.getPropertyPath().toString());
+        assertEquals("PersonId", v.getPropertyPath().toString());
     }
-
     @Test
-    void testPersonIdMustNotBe12Digits() {
+    void testPersonIdMustNotBePatten(){
         Person person = new Person();
-        person.setPersonId("123456789012"); // 12 digits
+        String personId = "12345678901234";
+        String fristName = "piampoon";
+        String lastName = "poonpiam";
+        String email = "sonicrat12@gmail.com";
+        Double hight = 170.6;
+        Double wight = 50.6;
+        person.setPersonId(personId);
+        person.setFristName(fristName);
+        person.setLastName(lastName);
+        person.setEmail(email);
+        person.setHight(hight);
+        person.setWight(wight);
 
         Set<ConstraintViolation<Person>> result = validator.validate(person);
+        assertEquals(1,result.size());
 
-        // result ต้องมี error 1 ค่าเท่านั้น
-        assertEquals(1, result.size());
-
-        // error message ตรงชนิด และถูก field
         ConstraintViolation<Person> v = result.iterator().next();
-        assertEquals("must match \"\\d{13}\"", v.getMessage());
-        assertEquals("personId", v.getPropertyPath().toString());
+        assertEquals("must match \"\\d{13}\"",v.getMessage());
+        assertEquals("PersonId",v.getPropertyPath().toString());
     }
-
     @Test
-    void testPersonIdMustNotBe14Digits() {
+    void testPersonFirstNameSizeMax10(){
         Person person = new Person();
-        person.setPersonId("12345678901234"); // 14 digits
+        String personId = "1234567890123";
+        String fristName = "piampoonpiampoon";
+        String lastName = "poonpiam";
+        String email = "sonicrat12@gmail.com";
+        Double hight = 170.6;
+        Double wight = 50.6;
+        person.setPersonId(personId);
+        person.setFristName(fristName);
+        person.setLastName(lastName);
+        person.setEmail(email);
+        person.setHight(hight);
+        person.setWight(wight);
 
         Set<ConstraintViolation<Person>> result = validator.validate(person);
+        assertEquals(1,result.size());
 
-        // result ต้องมี error 1 ค่าเท่านั้น
-        assertEquals(1, result.size());
-
-        // error message ตรงชนิด และถูก field
         ConstraintViolation<Person> v = result.iterator().next();
-        assertEquals("must match \"\\d{13}\"", v.getMessage());
-        assertEquals("personId", v.getPropertyPath().toString());
+        assertEquals("size must be between 0 and 10",v.getMessage());
+        assertEquals("fristName",v.getPropertyPath().toString());
     }
-
     @Test
-    void testPersonIdMustBeUnique() {
-        // สร้าง person object
-        Person p1 = new Person();
-        p1.setPersonId("1234567890123");
-        personRepository.saveAndFlush(p1);
+    void testPersonLastNameSizeMax10() {
+        Person person = new Person();
+        String personId = "1234567890123";
+        String fristName = "piampoon";
+        String lastName = "poonpiampoonpiam";
+        String email = "sonicrat12@gmail.com";
+        Double hight = 170.6;
+        Double wight = 50.6;
+        person.setPersonId(personId);
+        person.setFristName(fristName);
+        person.setLastName(lastName);
+        person.setEmail(email);
+        person.setHight(hight);
+        person.setWight(wight);
 
-        // คาดหวังว่า DataIntegrityViolationException จะถูก throw
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            // สร้าง person object ตัวที่ 2
-            Person p2 = new Person();
-            p2.setPersonId("1234567890123");
-            personRepository.saveAndFlush(p2);
-        });
+        Set<ConstraintViolation<Person>> result = validator.validate(person);
+        assertEquals(1,result.size());
+
+        ConstraintViolation<Person> v = result.iterator().next();
+        assertEquals("size must be between 0 and 10",v.getMessage());
+        assertEquals("lastName",v.getPropertyPath().toString());
     }
-
 }
 
 
